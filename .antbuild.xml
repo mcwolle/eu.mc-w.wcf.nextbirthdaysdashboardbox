@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="eu.mc-w.wcf.nextbirthdaysdashboardbox" default="build" xmlns:if="ant:if" xmlns:unless="ant:unless">
+ <!-- By default, we assume all tools to be on the $PATH -->
+ <property name="toolsdir" value=""/>
+
+ <!-- Uncomment the following when the tools are in ${basedir}/vendor/bin -->
+ <!-- <property name="toolsdir" value="${basedir}/vendor/bin/"/> -->
+
+ <target name="build"
+         depends="prepare,checkoutwcf,lint,phploc-ci,phpcs-ci,phpcpd-ci,tar"
+         description=""/>
+
+ <target name="build-parallel"
+         depends="prepare,checkoutwcf,lint,tools-parallel,tar"
+         description=""/>
+
+ <target name="tools-parallel" description="Run tools in parallel">
+  <parallel threadCount="2">
+   <antcall target="phpcpd-ci"/>
+   <antcall target="phpcs-ci"/>
+   <antcall target="phploc-ci"/>
+  </parallel>
+ </target>
+
+ <target name="clean"
+         unless="clean.done"
+         description="Cleanup build artifacts">
+  <delete dir="${basedir}/build/api"/>
+  <delete dir="${basedir}/build/coverage"/>
+  <delete dir="${basedir}/build/logs"/>
+  <delete dir="${basedir}/build/pdepend"/>
+  <delete dir="${basedir}/build/phpdox"/>
+  <delete dir="${basedir}/WCF"/>
+  <property name="clean.done" value="true"/>
+ </target>
+
+ <target name="prepare"
+         unless="prepare.done"
+         depends="clean"
+         description="Prepare for build">
+  <mkdir dir="${basedir}/build/api"/>
+  <mkdir dir="${basedir}/build/coverage"/>
+  <mkdir dir="${basedir}/build/logs"/>
+  <mkdir dir="${basedir}/build/pdepend"/>
+  <mkdir dir="${basedir}/build/phpdox"/>
+  <property name="prepare.done" value="true"/>
+ </target>
+ 
+ <target name="checkoutwcf" description="Checkout WCF for dependency checks">
+  <exec executable="${toolsdir}git">
+   <arg value="clone" />
+   <arg value="--branch=master" />
+   <arg value="--depth=1" />
+   <arg value="--quiet" />
+   <arg value="git://github.com/WoltLab/WCF.git" />
+   <arg value="WCF" />
+  </exec>
+ </target>
+
+ <target name="lint" description="Perform syntax check of sourcecode files">
+  <apply executable="php" failonerror="true">
+   <arg value="-l" />
+
+   <fileset dir="${basedir}/files">
+    <include name="**/*.php" />
+    <modified />
+   </fileset>
+  </apply>
+ </target>
+
+ <target name="phploc"
+         description="Measure project size using PHPLOC and print human readable output. Intended for usage on the command line.">
+  <exec executable="${toolsdir}phploc">
+   <arg value="--count-tests" />
+   <arg path="${basedir}/files" />
+  </exec>
+ </target>
+
+ <target name="phploc-ci"
+         depends="prepare"
+         description="Measure project size using PHPLOC and log result in CSV and XML format. Intended for usage within a continuous integration environment.">
+  <exec executable="${toolsdir}phploc">
+   <arg value="--count-tests" />
+   <arg value="--log-csv" />
+   <arg path="${basedir}/build/logs/phploc.csv" />
+   <arg value="--log-xml" />
+   <arg path="${basedir}/build/logs/phploc.xml" />
+   <arg path="${basedir}/files" />
+  </exec>
+ </target>
+
+ <target name="phpcs"
+         description="Find coding standard violations using PHP_CodeSniffer and print human readable output. Intended for usage on the command line before committing.">
+  <exec executable="${toolsdir}phpcs">
+   <arg value="--standard=${basedir}/WCF/CodeSniff/WCF" />
+   <arg value="--extensions=php" />
+   <arg path="${basedir}/files" />
+  </exec>
+ </target>
+
+ <target name="phpcs-ci"
+         depends="prepare"
+         description="Find coding standard violations using PHP_CodeSniffer and log result in XML format. Intended for usage within a continuous integration environment.">
+  <exec executable="${toolsdir}phpcs" output="/dev/null">
+   <arg value="--report=checkstyle" />
+   <arg value="--report-file=${basedir}/build/logs/checkstyle.xml" />
+   <arg value="--standard=${basedir}/WCF/CodeSniff/WCF" />
+   <arg value="--extensions=php" />
+   <arg path="${basedir}/files" />
+  </exec>
+ </target>
+ 
+ <target name="phpcpd"
+         description="Find duplicate code using PHPCPD and print human readable output. Intended for usage on the command line before committing.">
+  <exec executable="${toolsdir}phpcpd">
+   <arg path="${basedir}/files" />
+  </exec>
+ </target>
+
+ <target name="phpcpd-ci"
+         depends="prepare"
+         description="Find duplicate code using PHPCPD and log result in XML format. Intended for usage within a continuous integration environment.">
+  <exec executable="${toolsdir}phpcpd">
+   <arg value="--log-pmd" />
+   <arg path="${basedir}/build/logs/pmd-cpd.xml" />
+   <arg path="${basedir}/files" />
+  </exec>
+ </target>
+ 
+ <target name="tar" description="Create installable wcf package">
+  <available file="${basedir}/files" type="dir" property="available.files" />
+  <available file="${basedir}/templates" type="dir" property="available.templates" />
+  <available file="${basedir}/acptemplates" type="dir" property="available.acptemplates" />
+  
+  <tar destfile="${basedir}/files.tar" basedir="${basedir}/files" if:true="${available.files}" />
+  <tar destfile="${basedir}/templates.tar" basedir="${basedir}/templates" if:true="${available.templates}" />
+  <tar destfile="${basedir}/acptemplates.tar" basedir="${basedir}/acptemplates" if:true="${available.acptemplates}" />
+  <tar destfile="${basedir}/${ant.project.name}.tar" basedir="${basedir}" excludes="build/**, files/**, templates/**, acptemplates/**, .gitignore, .travis.yml, .antbuild.xml, WCF/**, ${ant.project.name}.tar" />
+ </target>
+</project>
