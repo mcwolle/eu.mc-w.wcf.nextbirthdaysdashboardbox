@@ -30,30 +30,33 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 	public function init(DashboardBox $box, IPage $page) {
 		parent::init($box, $page);
 
-		// get current date
-		$currentDay = DateUtil::format(null, 'm-d');
-
 		// get user ids
 		$date = new \DateTime();
 		$userIDs = array();
-		for ($i = 0; $i <= 7; $i++) {
+		for ($i = 0; $i < 90; $i++) {
 			$extract = explode('-', DateUtil::format($date, 'Y-n-j'));
-			$userIDs += UserBirthdayCache::getInstance()->getBirthdays($extract[1], $extract[2]);
+			$newUserIDs = UserBirthdayCache::getInstance()->getBirthdays($extract[1], $extract[2]);
+			if (count($newUserIDs) >= 1) {
+				$userIDs[DateUtil::format($date, 'm-d')] = $newUserIDs;
+			}
 
 			$date->add(new \DateInterval('P1D'));
 		}
 
 		if (!empty($userIDs)) {
-			$userProfileList = new UserProfileList();
-			$userProfileList->setObjectIDs($userIDs);
-			$userProfileList->readObjects();
 			$i = 0;
-			foreach ($userProfileList as $userProfile) {
-				if ($i == 5) break;
+			foreach ($userIDs as $currentDay => $userIDsOfDay) {
+				$userProfileList = new UserProfileList();
+				$userProfileList->setObjectIDs($userIDsOfDay);
+				$userProfileList->readObjects();
 
-				if (!$userProfile->isProtected() && substr($userProfile->birthday, 5) == $currentDay) {
-					$this->userProfiles[] = $userProfile;
-					$i++;
+				foreach ($userProfileList as $userProfile) {
+					if ($i == 5) break 2;
+
+					if (!$userProfile->isProtected() && substr($userProfile->birthday, 5) == $currentDay) {
+						$this->userProfiles[] = $userProfile;
+						$i++;
+					}
 				}
 			}
 		}

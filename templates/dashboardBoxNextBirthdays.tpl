@@ -11,18 +11,18 @@
 	{/foreach}
 </ul>
 
-{if $birthdayUserProfiles|count >= 1}
-	<a class="jsTodaysBirthdays button small more jsOnly">{lang}wcf.global.button.showAll{/lang}</a>
+{if $birthdayUserProfiles|count >= 100}
+	<a class="jsNextBirthdays button small more jsOnly">{lang}wcf.global.button.showAll{/lang}</a>
 	
 	<script data-relocate="true">
 		//<![CDATA[
 		$(function() {
-			var $todaysBirthdays = null;
-			$('.jsTodaysBirthdays').click(function() {
-				if ($todaysBirthdays === null) {
-					$todaysBirthdays = new WCF.User.List('wcf\\data\\user\\UserBirthdayAction', '{lang}wcf.dashboard.box.com.woltlab.wcf.user.todaysBirthdays{/lang} ({@TIME_NOW|date})', { date: '{@TIME_NOW|date:'Y-m-d'}' });
+			var $nextBirthdays = null;
+			$('.jsNextBirthdays').click(function() {
+				if ($nextBirthdays === null) {
+					$nextBirthdays = new WCF.User.List('wcf\\data\\user\\UserNextBirthdaysAction', '{lang}wcf.dashboard.box.nextBirthdays{/lang}', { date: '{@TIME_NOW|date:'Y-m-d'}' });
 				}
-				$todaysBirthdays.open();
+				$nextBirthdays.open();
 			});
 		});
 		//]]>
