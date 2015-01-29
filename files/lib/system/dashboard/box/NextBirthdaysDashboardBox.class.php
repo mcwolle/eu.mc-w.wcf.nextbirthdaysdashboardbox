@@ -34,10 +34,13 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 		$currentDay = DateUtil::format(null, 'm-d');
 
 		// get user ids
+		$date = new \DateTime();
 		$userIDs = array();
 		for ($i = 0; $i <= 7; $i++) {
-			$date = explode('-', DateUtil::format(new \DateTime()+$i, 'Y-n-j'));
-			$userIDs += UserBirthdayCache::getInstance()->getBirthdays($date[1], $date[2]);
+			$extract = explode('-', DateUtil::format($date, 'Y-n-j'));
+			$userIDs += UserBirthdayCache::getInstance()->getBirthdays($extract[1], $extract[2]);
+
+			$date->add(new \DateInterval('P1D'));
 		}
 
 		if (!empty($userIDs)) {
