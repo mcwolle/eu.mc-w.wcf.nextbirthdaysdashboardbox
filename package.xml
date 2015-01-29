@@ -33,6 +33,6 @@
 		<instruction type="dashboardBox">dashboardBox.xml</instruction>
 
 		<!-- languages -->
-		<!-- <instruction type="language">language/*.xml</instruction> -->
+		<instruction type="language">language/*.xml</instruction>
 	</instructions>
 </package>
