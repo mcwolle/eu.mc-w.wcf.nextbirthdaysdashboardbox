@@ -47,8 +47,6 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 		$userIDs = array();
 		$birthdays = array();
 		for ($i = 0; $i < $this->daysToShow; $i++) {
-			if (count($birthdays) > $this->maxBirthdays) break;
-			
 			$extract = explode('-', DateUtil::format($date, 'Y-n-j'));
 			$userIDs += UserBirthdayCache::getInstance()->getBirthdays($extract[1], $extract[2]);
 			$birthdays[] = DateUtil::format($date, 'm-d');
@@ -56,10 +54,12 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 			$date->add(new \DateInterval('P1D'));
 		}
 
+		// get user profiles
+		$optionID = User::getUserOptionID('birthday');
 		if (!empty($userIDs)) {
 			$i = 0;
 			$userProfileList = new UserProfileList();
-			$userProfileList->sqlOrderBy = 'user_table.birthday, user_table.username';
+			$userProfileList->sqlOrderBy = 'user_option_value.userOption'.$optionID.', user_table.username';
 			$userProfileList->setObjectIDs($userIDs);
 			$userProfileList->readObjects();
 
