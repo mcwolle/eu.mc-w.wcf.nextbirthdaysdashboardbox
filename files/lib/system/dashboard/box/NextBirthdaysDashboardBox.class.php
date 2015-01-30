@@ -23,6 +23,18 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 	 * @var	array<\wcf\data\user\UserProfile>
 	 */
 	public $userProfiles = array();
+	
+	/**
+	 * maximum number of days to show
+	 * @var	integer
+	 */
+	public $daysToShow = 90;
+	
+	/**
+	 * maximum number of entries to show
+	 * @var	integer
+	 */
+	public $maxBirthdays = 5;
 
 	/**
 	 * @see	\wcf\system\dashboard\box\IDashboardBox::init()
@@ -33,30 +45,30 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 		// get user ids
 		$date = new \DateTime();
 		$userIDs = array();
-		for ($i = 0; $i < 90; $i++) {
+		$birthdays = array();
+		for ($i = 0; $i < $daysToShow; $i++) {
+			if (count($birthdays) > $maxBirthdays) break;
+			
 			$extract = explode('-', DateUtil::format($date, 'Y-n-j'));
-			$newUserIDs = UserBirthdayCache::getInstance()->getBirthdays($extract[1], $extract[2]);
-			if (count($newUserIDs) >= 1) {
-				$userIDs[DateUtil::format($date, 'm-d')] = $newUserIDs;
-			}
+			$userIDs += UserBirthdayCache::getInstance()->getBirthdays($extract[1], $extract[2]);
+			$birthdays[] = DateUtil::format($date, 'm-d');
 
 			$date->add(new \DateInterval('P1D'));
 		}
 
 		if (!empty($userIDs)) {
 			$i = 0;
-			foreach ($userIDs as $currentDay => $userIDsOfDay) {
-				$userProfileList = new UserProfileList();
-				$userProfileList->setObjectIDs($userIDsOfDay);
-				$userProfileList->readObjects();
+			$userProfileList = new UserProfileList();
+			$userProfileList->sqlOrderBy = 'user_table.birthday, user_table.username';
+			$userProfileList->setObjectIDs($userIDs);
+			$userProfileList->readObjects();
 
-				foreach ($userProfileList as $userProfile) {
-					if ($i == 5) break 2;
+			foreach ($userProfileList as $userProfile) {
+				if ($i == $maxBirthdays) break;
 
-					if (!$userProfile->isProtected() && substr($userProfile->birthday, 5) == $currentDay) {
-						$this->userProfiles[] = $userProfile;
-						$i++;
-					}
+				if (!$userProfile->isProtected() && in_array(substr($userProfile->birthday, 5), $birthdays, true)) {
+					$this->userProfiles[] = $userProfile;
+					$i++;
 				}
 			}
 		}
