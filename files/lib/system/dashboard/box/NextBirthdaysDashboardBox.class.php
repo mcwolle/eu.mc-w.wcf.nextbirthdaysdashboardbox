@@ -1,6 +1,7 @@
 <?php
 namespace wcf\system\dashboard\box;
 use wcf\data\dashboard\box\DashboardBox;
+use wcf\data\user\User;
 use wcf\data\user\UserProfileList;
 use wcf\page\IPage;
 use wcf\system\user\UserBirthdayCache;
@@ -47,19 +48,22 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 		$userIDs = array();
 		$birthdays = array();
 		for ($i = 0; $i < $this->daysToShow; $i++) {
+			// select 5 more as necessary because of later birthday check
+			if (count($userIDs) > $this->maxBirthdays + 5) break;
+			
 			$extract = explode('-', DateUtil::format($date, 'Y-n-j'));
-			$userIDs += UserBirthdayCache::getInstance()->getBirthdays($extract[1], $extract[2]);
+			$userIDs = array_merge($userIDs, UserBirthdayCache::getInstance()->getBirthdays($extract[1], $extract[2]));
 			$birthdays[] = DateUtil::format($date, 'm-d');
 
 			$date->add(new \DateInterval('P1D'));
 		}
 
 		// get user profiles
-		$optionID = User::getUserOptionID('birthday');
 		if (!empty($userIDs)) {
 			$i = 0;
+			$optionID = User::getUserOptionID('birthday');
 			$userProfileList = new UserProfileList();
-			$userProfileList->sqlOrderBy = 'user_option_value.userOption'.$optionID.', user_table.username';
+			$userProfileList->sqlOrderBy = 'SUBSTRING(user_option_value.userOption'.$optionID.', 6, 5), user_table.username';
 			$userProfileList->setObjectIDs($userIDs);
 			$userProfileList->readObjects();
 
