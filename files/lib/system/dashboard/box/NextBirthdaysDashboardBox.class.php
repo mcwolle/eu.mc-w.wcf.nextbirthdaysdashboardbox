@@ -26,6 +26,12 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 	public $userProfiles = array();
 
 	/**
+	 * set to true if the showAllButton must be displayed
+	 * @var	boolean
+	 */
+	public $showAllButton = false;
+
+	/**
 	 * @see	\wcf\system\dashboard\box\IDashboardBox::init()
 	 */
 	public function init(DashboardBox $box, IPage $page) {
@@ -53,11 +59,13 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 			$userProfileList->readObjects();
 
 			foreach ($userProfileList->getObjects() as $userProfile) {
-				if ($i == WCF_NEXTBIRTHDAYS_MAX_BIRTHDAYS) break;
-
 				if (!$userProfile->isProtected() && $userProfile->getAge($year) >= 0) {
-					$this->userProfiles[] = $userProfile;
 					$i++;
+					if ($i == WCF_NEXTBIRTHDAYS_MAX_BIRTHDAYS+1) {
+						$this->showAllButton = true;
+						break;
+					}
+					$this->userProfiles[] = $userProfile;
 				}
 			}
 		}
@@ -74,7 +82,8 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 		}
 
 		WCF::getTPL()->assign(array(
-			'birthdayUserProfiles' => $this->userProfiles
+			'birthdayUserProfiles' => $this->userProfiles,
+			'showAllButton' => $this->showAllButton
 		));
 		return WCF::getTPL()->fetch('dashboardBoxNextBirthdays');
 	}

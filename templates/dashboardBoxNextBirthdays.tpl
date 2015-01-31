@@ -12,7 +12,7 @@
 	{/foreach}
 </ul>
 
-{if $birthdayUserProfiles|count >= 1}
+{if $showAllButton}
 	<a class="jsNextBirthdays button small more jsOnly">{lang}wcf.global.button.showAll{/lang}</a>
 	
 	<script data-relocate="true">
