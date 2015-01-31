@@ -3,8 +3,8 @@ namespace wcf\data\user;
 use wcf\data\IGroupedUserListAction;
 use wcf\system\exception\UserInputException;
 use wcf\system\user\UserBirthdayCache;
-use wcf\util\DateUtil;
 use wcf\system\WCF;
+use wcf\util\DateUtil;
 
 /**
  * Shows a list of the next n user birthdays.
@@ -37,14 +37,9 @@ class UserNextBirthdaysAction extends UserProfileAction implements IGroupedUserL
 	 * @see	\wcf\data\IGroupedUserListAction::getGroupedUserList()
 	 */
 	public function getGroupedUserList() {
-		$year = $month = $day = 0;
-		$value = explode('-', $this->parameters['date']);
-		if (isset($value[0])) $year = intval($value[0]);
-		if (isset($value[1])) $month = intval($value[1]);
-		if (isset($value[2])) $day = intval($value[2]);
-		
 		// get user ids
 		$date = new \DateTime();
+		$year = DateUtil::format($date, 'Y');
 		$userIDs = array();
 		for ($i = 0; $i < WCF_NEXTBIRTHDAYS_DAYS_TO_SHOW; $i++) {
 			$extract = explode('-', DateUtil::format($date, 'Y-n-j'));

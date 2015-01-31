@@ -33,12 +33,11 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 
 		// get user ids
 		$date = new \DateTime();
+		$year = DateUtil::format($date, 'Y');
 		$userIDs = array();
-		$birthdays = array();
 		for ($i = 0; $i < WCF_NEXTBIRTHDAYS_DAYS_TO_SHOW; $i++) {
 			$extract = explode('-', DateUtil::format($date, 'Y-n-j'));
 			$userIDs = array_merge($userIDs, UserBirthdayCache::getInstance()->getBirthdays($extract[1], $extract[2]));
-			$birthdays[] = DateUtil::format($date, 'm-d');
 
 			$date->add(new \DateInterval('P1D'));
 		}
@@ -52,10 +51,10 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 			$userProfileList->setObjectIDs($userIDs);
 			$userProfileList->readObjects();
 
-			foreach ($userProfileList as $userProfile) {
+			foreach ($userProfileList->getObjects() as $userProfile) {
 				if ($i == WCF_NEXTBIRTHDAYS_MAX_BIRTHDAYS) break;
 
-				if (!$userProfile->isProtected() && in_array(substr($userProfile->birthday, 5), $birthdays, true)) {
+				if (!$userProfile->isProtected() && $userProfile->getAge($year) >= 0) {
 					$this->userProfiles[] = $userProfile;
 					$i++;
 				}
