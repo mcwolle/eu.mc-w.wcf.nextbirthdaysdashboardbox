@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language xmlns="http://www.woltlab.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.woltlab.com http://www.woltlab.com/XSD/maelstrom/language.xsd" languagecode="de">
+	<category name="wcf.acp.option">
+		<item name="wcf.acp.option.category.dashboard.sidebar.nextbirthdays"><![CDATA[Nächste Geburtstage]]></item>
+		<item name="wcf.acp.option.wcf_nextbirthdays_max_birthdays"><![CDATA[Anzahl an Geburtstagen]]></item>
+		<item name="wcf.acp.option.wcf_nextbirthdays_days_to_show"><![CDATA[Berücksichtigter Zeitraum]]></item>
+		<item name="wcf.acp.option.wcf_nextbirthdays_days_to_show.description"><![CDATA[Für die Ermittlung der nächsten Geburtstage werden nur die Geburtstage des festgelegten Zeitraums berücksichtigt. [Zeit in Tagen]]]></item>
+	</category>
+
 	<category name="wcf.dashboard.box">
 		<item name="wcf.dashboard.box.nextbirthdays"><![CDATA[Nächste Geburtstage]]></item>
 	</category>

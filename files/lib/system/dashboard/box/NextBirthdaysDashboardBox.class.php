@@ -24,18 +24,6 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 	 * @var	array<\wcf\data\user\UserProfile>
 	 */
 	public $userProfiles = array();
-	
-	/**
-	 * maximum number of days to show
-	 * @var	integer
-	 */
-	public $daysToShow = 90;
-	
-	/**
-	 * maximum number of entries to show
-	 * @var	integer
-	 */
-	public $maxBirthdays = 5;
 
 	/**
 	 * @see	\wcf\system\dashboard\box\IDashboardBox::init()
@@ -47,10 +35,7 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 		$date = new \DateTime();
 		$userIDs = array();
 		$birthdays = array();
-		for ($i = 0; $i < $this->daysToShow; $i++) {
-			// select 5 more as necessary because of later birthday check
-			if (count($userIDs) > $this->maxBirthdays + 5) break;
-			
+		for ($i = 0; $i < WCF_NEXTBIRTHDAYS_DAYS_TO_SHOW; $i++) {
 			$extract = explode('-', DateUtil::format($date, 'Y-n-j'));
 			$userIDs = array_merge($userIDs, UserBirthdayCache::getInstance()->getBirthdays($extract[1], $extract[2]));
 			$birthdays[] = DateUtil::format($date, 'm-d');
@@ -68,7 +53,7 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 			$userProfileList->readObjects();
 
 			foreach ($userProfileList as $userProfile) {
-				if ($i == $this->maxBirthdays) break;
+				if ($i == WCF_NEXTBIRTHDAYS_MAX_BIRTHDAYS) break;
 
 				if (!$userProfile->isProtected() && in_array(substr($userProfile->birthday, 5), $birthdays, true)) {
 					$this->userProfiles[] = $userProfile;
