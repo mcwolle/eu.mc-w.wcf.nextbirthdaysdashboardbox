@@ -8,12 +8,12 @@ use wcf\system\user\UserBirthdayCache;
 use wcf\system\WCF;
 
 /**
- * Shows a list of user birthdays.
+ * Shows a list of the next n user birthdays.
  *
- * @author	Marcel Werk
- * @copyright	2001-2014 WoltLab GmbH
- * @license	GNU Lesser General Public License <http://opensource.org/licenses/lgpl-license.php>
- * @package	com.woltlab.wcf
+ * @author	Thomas Abröll
+ * @copyright	2015 Thomas Abröll
+ * @license	http://opensource.org/licenses/mit-license.php MIT
+ * @package	eu.mc-w.wcf.nextbirthdaysdashboardbox
  * @subpackage	data.user
  * @category	Community Framework
  */
@@ -44,15 +44,28 @@ class UserNextBirthdaysAction extends UserProfileAction implements IGroupedUserL
 		if (isset($value[1])) $month = intval($value[1]);
 		if (isset($value[2])) $day = intval($value[2]);
 		
-		// get users
-		$users = array();
-		$userIDs = UserBirthdayCache::getInstance()->getBirthdays($month, $day);
-		$userList = new UserProfileList();
-		$userList->setObjectIDs($userIDs);
-		$userList->readObjects();
-		foreach ($userList->getObjects() as $user) {
-			if (!$user->isProtected() && $user->getAge($year) >= 0) {
-				$users[] = $user; 
+		// get user ids
+		$date = new \DateTime();
+		$userIDs = array();
+		for ($i = 0; $i < WCF_NEXTBIRTHDAYS_DAYS_TO_SHOW; $i++) {
+			$extract = explode('-', DateUtil::format($date, 'Y-n-j'));
+			$userIDs = array_merge($userIDs, UserBirthdayCache::getInstance()->getBirthdays($extract[1], $extract[2]));
+
+			$date->add(new \DateInterval('P1D'));
+		}
+
+		// get user profiles
+		if (!empty($userIDs)) {
+			$optionID = User::getUserOptionID('birthday');
+			$userProfileList = new UserProfileList();
+			$userProfileList->sqlOrderBy = 'SUBSTRING(user_option_value.userOption'.$optionID.', 6, 5), user_table.username';
+			$userProfileList->setObjectIDs($userIDs);
+			$userProfileList->readObjects();
+
+			foreach ($userProfileList->getObjects() as $userProfile) {
+				if (!$userProfile->isProtected() && $userProfile->getAge($year) >= 0) {
+					$users[] = $userProfile;
+				}
 			}
 		}
 		
