@@ -1,10 +1,9 @@
 <?php
 namespace wcf\data\user;
-use wcf\data\user\UserProfileAction;
-use wcf\data\user\UserProfileList;
 use wcf\data\IGroupedUserListAction;
 use wcf\system\exception\UserInputException;
 use wcf\system\user\UserBirthdayCache;
+use wcf\util\DateUtil;
 use wcf\system\WCF;
 
 /**

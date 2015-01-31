@@ -20,7 +20,7 @@
 			var $nextBirthdays = null;
 			$('.jsNextBirthdays').click(function() {
 				if ($nextBirthdays === null) {
-					$nextBirthdays = new WCF.User.List('wcf\\data\\user\\UserNextBirthdaysAction', '{lang}wcf.dashboard.box.nextBirthdays{/lang}', { date: '{@TIME_NOW|date:'Y-m-d'}' });
+					$nextBirthdays = new WCF.User.List('wcf\\data\\user\\UserNextBirthdaysAction', '{lang}wcf.dashboard.box.nextbirthdays{/lang}', { date: '{@TIME_NOW|date:'Y-m-d'}' });
 				}
 				$nextBirthdays.open();
 			});
