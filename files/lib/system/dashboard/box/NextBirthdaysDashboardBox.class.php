@@ -33,6 +33,7 @@ class NextBirthdaysDashboardBox extends AbstractSidebarDashboardBox {
 
 		// get user ids
 		$date = new \DateTime();
+		$date->setTimezone(WCF::getUser()->getTimeZone());
 		$year = DateUtil::format($date, 'Y');
 		$userIDs = array();
 		for ($i = 0; $i < WCF_NEXTBIRTHDAYS_DAYS_TO_SHOW; $i++) {

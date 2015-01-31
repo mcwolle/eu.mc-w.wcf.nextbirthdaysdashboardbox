@@ -5,7 +5,8 @@
 			
 			<div class="sidebarBoxHeadline">
 				<h3><a href="{link controller='User' object=$birthdayUserProfile}{/link}" class="userLink" data-user-id="{@$birthdayUserProfile->userID}">{$birthdayUserProfile->username}</a></h3>
-				<small>{$birthdayUserProfile->getBirthday()}</small>
+				{assign var=nextBirthdayYear value=$birthdayUserProfile->birthday|nextBirthdayYear}
+				<small>{$birthdayUserProfile->getBirthday($nextBirthdayYear)}</small>
 			</div>
 		</li>
 	{/foreach}

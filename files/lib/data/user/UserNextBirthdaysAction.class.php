@@ -39,6 +39,7 @@ class UserNextBirthdaysAction extends UserProfileAction implements IGroupedUserL
 	public function getGroupedUserList() {
 		// get user ids
 		$date = new \DateTime();
+		$date->setTimezone(WCF::getUser()->getTimeZone());
 		$year = DateUtil::format($date, 'Y');
 		$userIDs = array();
 		for ($i = 0; $i < WCF_NEXTBIRTHDAYS_DAYS_TO_SHOW; $i++) {
@@ -64,12 +65,11 @@ class UserNextBirthdaysAction extends UserProfileAction implements IGroupedUserL
 		}
 		
 		WCF::getTPL()->assign(array(
-			'users' => $users,
-			'year' => $year
+			'users' => $users
 		));
 		return array(
 			'pageCount' => 1,
-			'template' => WCF::getTPL()->fetch('userBirthdayList')
+			'template' => WCF::getTPL()->fetch('userNextBirthdaysList')
 		);
 	}
 }
