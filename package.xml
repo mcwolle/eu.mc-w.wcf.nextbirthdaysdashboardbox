@@ -5,8 +5,8 @@
 		<packagename language="de"><![CDATA[Next Birthdays Dashboard Box]]></packagename>
 		<packagedescription><![CDATA[Next Birthdays Dashboard Box]]></packagedescription>
 		<packagedescription language="de"><![CDATA[Next Birthdays Dashboard Box]]></packagedescription>
-		<version>1.0.0</version>
-		<date>2015-01-29</date>
+		<version>1.1.0</version>
+		<date>2015-03-20</date>
 	</packageinformation>
 	
 	<authorinformation>
@@ -19,7 +19,7 @@
 	</requiredpackages>
 
 	<excludedpackages>
-		<excludedpackage version="2.1.0 Alpha 1">com.woltlab.wcf</excludedpackage>
+		<excludedpackage version="2.2.0 Alpha 1">com.woltlab.wcf</excludedpackage>
 	</excludedpackages>
 	
 	<instructions type="install">
